@@ -33,9 +33,17 @@ export default function DashboardScreen({ navigation }: any) {
       <Text style={styles.title}>🏋️ Dashboard</Text>
       <Text style={styles.email}>{email}</Text>
       
-      {/* Placeholder for future workout entry feature */}
+      {/* Add workout button */}
+      <TouchableOpacity 
+        style={styles.addButton} 
+        onPress={() => navigation.navigate('WorkoutEntry')}
+      >
+        <Text style={styles.addButtonText}>+ Add Workout</Text>
+      </TouchableOpacity>
+
+      {/* Placeholder for workout list */}
       <View style={styles.placeholder}>
-        <Text style={styles.placeholderText}>Workout entry coming next...</Text>
+        <Text style={styles.placeholderText}>Your workouts will appear here...</Text>
       </View>
 
       {/* Logout button */}
@@ -62,7 +70,19 @@ const styles = StyleSheet.create({
   email: {
     fontSize: 16,
     color: '#64ffda',
-    marginBottom: 40,
+    marginBottom: 20,
+  },
+  addButton: {
+    backgroundColor: '#64ffda',
+    padding: 16,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  addButtonText: {
+    color: '#0a0e27',
+    fontSize: 18,
+    fontWeight: 'bold',
   },
   placeholder: {
     flex: 1,

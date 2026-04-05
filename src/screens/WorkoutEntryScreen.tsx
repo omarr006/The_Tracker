@@ -22,6 +22,9 @@ export default function WorkoutEntryScreen({ navigation }: any) {
     try {
       // Get current session token for auth
       const { data: { session } } = await supabase.auth.getSession();
+      console.log('Session exists?', !!session);
+      console.log('Token exists?', !!session?.access_token);
+      
       if (!session) {
         Alert.alert('Error', 'Not logged in');
         setLoading(false);

@@ -3,11 +3,13 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, KeyboardAvo
 import { supabase } from '../services/supabase';
 
 export default function LoginScreen({ navigation }: any) {
+  // State for email, password, loading spinner, and login/signup toggle
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [isLogin, setIsLogin] = useState(true);
 
+  // Handles both login and signup
   const handleAuth = async () => {
     if (!email || !password) {
       Alert.alert('Error', 'Fill all fields');
@@ -18,13 +20,15 @@ export default function LoginScreen({ navigation }: any) {
     
     try {
       if (isLogin) {
+        // Login with Supabase
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
         navigation.replace('Dashboard');
       } else {
+        // Signup with Supabase
         const { error } = await supabase.auth.signUp({ email, password });
         if (error) throw error;
-        Alert.alert('Success', 'Check email to confirm');
+        Alert.alert('Success', 'Account created! Now login.');
       }
     } catch (error: any) {
       Alert.alert('Error', error.message);
@@ -42,6 +46,7 @@ export default function LoginScreen({ navigation }: any) {
         <Text style={styles.title}>🏋️ The Tracker</Text>
         <Text style={styles.subtitle}>{isLogin ? 'Login' : 'Sign Up'}</Text>
 
+        {/* Email input */}
         <TextInput
           style={styles.input}
           placeholder="Email"
@@ -52,6 +57,7 @@ export default function LoginScreen({ navigation }: any) {
           keyboardType="email-address"
         />
 
+        {/* Password input */}
         <TextInput
           style={styles.input}
           placeholder="Password"
@@ -61,6 +67,7 @@ export default function LoginScreen({ navigation }: any) {
           secureTextEntry={true}
         />
 
+        {/* Login/Signup button */}
         <TouchableOpacity
           style={[styles.button, loading && styles.buttonDisabled]}
           onPress={handleAuth}
@@ -71,6 +78,7 @@ export default function LoginScreen({ navigation }: any) {
           </Text>
         </TouchableOpacity>
 
+        {/* Switch between login and signup */}
         <TouchableOpacity onPress={() => setIsLogin(!isLogin)}>
           <Text style={styles.switchText}>
             {isLogin ? 'Need account? Sign up' : 'Have account? Login'}

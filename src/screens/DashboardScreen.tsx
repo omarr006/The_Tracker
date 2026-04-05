@@ -3,21 +3,26 @@ import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import { supabase } from '../services/supabase';
 
 export default function DashboardScreen({ navigation }: any) {
+  // State for user email
   const [email, setEmail] = useState('');
 
+  // On mount, check if user is logged in
   useEffect(() => {
     checkUser();
   }, []);
 
+  // Fetch current user from Supabase
   const checkUser = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (user) {
       setEmail(user.email || '');
     } else {
+      // If not logged in, redirect to Login
       navigation.replace('Login');
     }
   };
 
+  // Logout handler
   const handleLogout = async () => {
     await supabase.auth.signOut();
     navigation.replace('Login');
@@ -28,10 +33,12 @@ export default function DashboardScreen({ navigation }: any) {
       <Text style={styles.title}>🏋️ Dashboard</Text>
       <Text style={styles.email}>{email}</Text>
       
+      {/* Placeholder for future workout entry feature */}
       <View style={styles.placeholder}>
         <Text style={styles.placeholderText}>Workout entry coming next...</Text>
       </View>
 
+      {/* Logout button */}
       <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
         <Text style={styles.logoutText}>Logout</Text>
       </TouchableOpacity>

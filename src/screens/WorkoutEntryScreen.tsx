@@ -20,18 +20,37 @@ export default function WorkoutEntryScreen({ navigation }: any) {
 
     setLoading(true);
     try {
-      // Invoke Supabase Edge Function 'process-workout'
+          // Invoke Supabase Edge Function 'process-workout'
       const res = await supabase.functions.invoke('process-workout', {
         body: JSON.stringify({ raw_text: workoutText, workout_date: workoutDate })
       });
 
-      const json = await res.json();
-      if (!res.ok) {
-        throw new Error(json?.error || 'AI parse failed');
+      // Debug: log raw response shape (check Metro logs)
+      console.log('process-workout response:', res);
+
+      // supabase.functions.invoke may return { data, error } or a Response-like object.
+      if (res && (res as any).error) {
+        throw (res as any).error;
       }
 
-      // Expect validated JSON from function
-      setParsedData(json);
+      let parsed: any = null;
+
+      if (res && (res as any).data !== undefined) {
+        const d = (res as any).data;
+        parsed = typeof d === 'string' ? JSON.parse(d) : d;
+      } else if (res && typeof (res as any).text === 'function') {
+        // If it's a Response-like object
+        const txt = await (res as any).text();
+        parsed = JSON.parse(txt);
+      } else if (typeof res === 'string') {
+        parsed = JSON.parse(res);
+      } else {
+        parsed = res;
+      }
+
+      if (!parsed) throw new Error('Empty parse result');
+
+      setParsedData(parsed);
     } catch (error: any) {
       Alert.alert('Parse Error', error.message || 'Failed to parse workout');
     } finally {

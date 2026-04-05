@@ -1,89 +1,20 @@
-import { StatusBar } from 'expo-status-bar';
-import { useState } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, ActivityIndicator } from 'react-native';
-import { supabase } from './src/services/supabase';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import LoginScreen from './src/screens/LoginScreen';
+import DashboardScreen from './src/screens/DashboardScreen';
+
+const Stack = createNativeStackNavigator();
 
 export default function App() {
-  const [testing, setTesting] = useState(false);
-  const [result, setResult] = useState('');
-
-  const testConnection = async () => {
-    setTesting(true);
-    setResult('');
-    
-    try {
-      const { data, error } = await supabase.auth.getSession();
-      
-      if (error) {
-        setResult('❌ Error: ' + error.message);
-      } else {
-        setResult('✅ Connected!');
-      }
-    } catch (e: any) {
-      setResult('❌ Failed: ' + e.message);
-    } finally {
-      setTesting(false);
-    }
-  };
-
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>🏋️ The Tracker</Text>
-      <Text style={styles.subtitle}>AI Workout Coach</Text>
-      
-      <TouchableOpacity 
-        style={styles.button}
-        onPress={testConnection}
-        disabled={testing}
+    <NavigationContainer>
+      <Stack.Navigator 
+        initialRouteName="Login"
+        screenOptions={{ headerShown: false }}
       >
-        {testing ? (
-          <ActivityIndicator color="#0a0e27" />
-        ) : (
-          <Text style={styles.buttonText}>Ping Backend</Text>
-        )}
-      </TouchableOpacity>
-      
-      {result ? <Text style={styles.result}>{result}</Text> : null}
-      
-      <StatusBar style="auto" />
-    </View>
+        <Stack.Screen name="Login" component={LoginScreen} />
+        <Stack.Screen name="Dashboard" component={DashboardScreen} />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#0a0e27',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  title: {
-    fontSize: 36,
-    fontWeight: 'bold',
-    color: '#fff',
-    marginBottom: 8,
-  },
-  subtitle: {
-    fontSize: 18,
-    color: '#64ffda',
-    marginBottom: 40,
-  },
-  button: {
-    backgroundColor: '#64ffda',
-    paddingHorizontal: 32,
-    paddingVertical: 16,
-    borderRadius: 8,
-    minWidth: 160,
-    alignItems: 'center',
-  },
-  buttonText: {
-    color: '#0a0e27',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  result: {
-    marginTop: 20,
-    fontSize: 18,
-    color: '#fff',
-  },
-});

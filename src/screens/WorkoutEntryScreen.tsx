@@ -20,9 +20,20 @@ export default function WorkoutEntryScreen({ navigation }: any) {
 
     setLoading(true);
     try {
-          // Invoke Supabase Edge Function 'process-workout'
+      // Get current session token for auth
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        Alert.alert('Error', 'Not logged in');
+        setLoading(false);
+        return;
+      }
+
+      // Invoke Supabase Edge Function 'process-workout'
       const res = await supabase.functions.invoke('process-workout', {
-        body: JSON.stringify({ raw_text: workoutText, workout_date: workoutDate })
+        body: { raw_text: workoutText, workout_date: workoutDate },
+        headers: {
+          Authorization: `Bearer ${session.access_token}`
+        }
       });
 
       // Debug: log raw response shape (check Metro logs)

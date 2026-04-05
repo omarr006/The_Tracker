@@ -32,11 +32,9 @@ export default function WorkoutEntryScreen({ navigation }: any) {
       }
 
       // Invoke Supabase Edge Function 'process-workout'
+      // supabase-js auto-adds Authorization header from session
       const res = await supabase.functions.invoke('process-workout', {
-        body: { raw_text: workoutText, workout_date: workoutDate },
-        headers: {
-          Authorization: `Bearer ${session.access_token}`
-        }
+        body: { raw_text: workoutText, workout_date: workoutDate }
       });
 
       // Debug: log raw response shape (check Metro logs)

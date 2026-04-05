@@ -12,15 +12,15 @@ export default function App() {
     setResult('');
     
     try {
-      const { data, error } = await supabase.from('_health').select('*').limit(1);
+      const { data, error } = await supabase.auth.getSession();
       
       if (error) {
-        setResult('❌ Not connected');
+        setResult('❌ Error: ' + error.message);
       } else {
         setResult('✅ Connected!');
       }
-    } catch (e) {
-      setResult('❌ No config');
+    } catch (e: any) {
+      setResult('❌ Failed: ' + e.message);
     } finally {
       setTesting(false);
     }

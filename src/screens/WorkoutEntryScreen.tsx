@@ -20,25 +20,18 @@ export default function WorkoutEntryScreen({ navigation }: any) {
 
     setLoading(true);
     try {
-      // TODO: Replace with actual Edge Function URL after deployment
-      // For now, show mock parsed data
-      
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      // Mock parsed response
-      const mockParsed = {
-        workout_date: workoutDate,
-        workout_type: 'strength',
-        duration_minutes: 45,
-        exercises: [
-          { exercise_name: 'Squat', sets: 3, reps: [10, 10, 8], weight_lbs: [135, 155, 165] },
-          { exercise_name: 'Bench Press', sets: 3, reps: [8, 8, 6], weight_lbs: [135, 145, 155] }
-        ],
-        ai_summary: 'Good progressive overload on squats. Consider adding a third compound movement.'
-      };
-      
-      setParsedData(mockParsed);
+      // Invoke Supabase Edge Function 'process-workout'
+      const res = await supabase.functions.invoke('process-workout', {
+        body: JSON.stringify({ raw_text: workoutText, workout_date: workoutDate })
+      });
+
+      const json = await res.json();
+      if (!res.ok) {
+        throw new Error(json?.error || 'AI parse failed');
+      }
+
+      // Expect validated JSON from function
+      setParsedData(json);
     } catch (error: any) {
       Alert.alert('Parse Error', error.message || 'Failed to parse workout');
     } finally {
